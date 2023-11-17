@@ -11,7 +11,6 @@ namespace engine {
     struct PipelineConfiguration {
         VkViewport viewport;
         VkRect2D scissor;
-        VkPipelineViewportStateCreateInfo viewportInfo;
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
         VkPipelineMultisampleStateCreateInfo multisampleInfo;
@@ -25,7 +24,7 @@ namespace engine {
 
     class Pipeline {
         public:
-        Pipeline(const std::string& vertFilePath, const std::string& fragFilePath, ProtocolDevice&, const PipelineConfiguration&);
+        Pipeline(const std::string& vertFilePath, const std::string& fragFilePath, Device&, const PipelineConfiguration&);
 
         ~Pipeline();
 
@@ -41,7 +40,7 @@ namespace engine {
 
         void createShaderModule(const std::vector<char>&, VkShaderModule*);
 
-        ProtocolDevice & device;
+        Device & device;
         VkPipeline graphicsPipeline;
         VkShaderModule vertShaderModule;
         VkShaderModule fragShaderModule;

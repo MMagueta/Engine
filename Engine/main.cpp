@@ -4,18 +4,15 @@
 #include <cstdlib>
 #define GLFW_INCLUDE_VULKAN
 
-// #include <GL/gl.h>
-// #include <GLFW/glfw3.h>
-
-// #define GLM_FORCE_RADIANS
-// #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-// #include <glm/vec4.hpp>
-// #include <glm/mat4x4.hpp>
-
 #include <iostream>
 
 #include "pipeline.hpp"
+#include "swap_chain.hpp"
 #include "window.hpp"
+
+#include <memory>
+#include <vector>
+#include <stdexcept>
 
 class Runner {
 public:
@@ -23,14 +20,60 @@ public:
   static constexpr int HEIGHT = 600;
   void run(){};
 
+  Runner() {
+      createPipelineLayout();
+      createPipeline();
+      createCommandBuffers();
+  }
+  ~Runner() {
+      vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
+  }
+
+  Runner(const Runner&) = delete;
+  Runner& operator=(const Runner&) = delete;
+
 private:
-  engine::Window Window{WIDTH, HEIGHT, "SomeName"};
-  engine::ProtocolDevice device{Window};
+    void createPipelineLayout() {
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 0;
+        pipelineLayoutInfo.pSetLayouts = nullptr;
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+        if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+            throw std::exception("Failed to create pipeline layout.");
+    }
+    void createPipeline() {
+        auto pipelineConfig = engine::Pipeline::defaultPipelineConfiguration(swapChain.width(), swapChain.height());
+        pipelineConfig.renderPass = swapChain.getRenderPass();
+        pipelineConfig.pipelineLayout = pipelineLayout;
+        pipeline = std::make_unique<engine::Pipeline>(
+            "C:/Users/mague/Source/Repos/Engine/Engine/Shaders/simple_shader.vert.svt",
+            "C:/Users/mague/Source/Repos/Engine/Engine/Shaders/simple_shader.frag.svt",
+            device,
+            pipelineConfig
+        );
+    }
+    void createCommandBuffers() {
+    
+    }
+    void drawFrame() {
+
+    }
+
+  engine::Window window{WIDTH, HEIGHT, "SomeName"};
+  engine::Device device{window};
+  engine::SwapChain swapChain{ device, window.getExtent() };
+  /*
   engine::Pipeline Pipeline{
       "C:/Users/mague/Source/Repos/Engine/Engine/Shaders/simple_shader.vert.svt",
       "C:/Users/mague/Source/Repos/Engine/Engine/Shaders/simple_shader.frag.svt",
       device,
       engine::Pipeline::defaultPipelineConfiguration(WIDTH, HEIGHT)};
+  */
+  std::unique_ptr<engine::Pipeline> pipeline;
+  VkPipelineLayout pipelineLayout;
+  std::vector<VkCommandBuffer> commandBuffers;
 };
 
 int main() {

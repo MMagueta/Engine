@@ -22,7 +22,7 @@ struct QueueFamilyIndices {
   bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
 };
 
-class ProtocolDevice {
+class Device {
 public:
 #ifdef NDEBUG
   const bool enableValidationLayers = false;
@@ -30,14 +30,14 @@ public:
   const bool enableValidationLayers = true;
 #endif
 
-  ProtocolDevice(Window &window);
-  ~ProtocolDevice();
+  Device(Window &window);
+  ~Device();
 
   // Not copyable or movable
-  ProtocolDevice(const ProtocolDevice &) = delete;
-  void operator=(const ProtocolDevice &) = delete;
-  ProtocolDevice(ProtocolDevice &&) = delete;
-  ProtocolDevice &operator=(ProtocolDevice &&) = delete;
+  Device(const Device &) = delete;
+  void operator=(const Device &) = delete;
+  Device(Device &&) = delete;
+  Device &operator=(Device &&) = delete;
 
   VkCommandPool getCommandPool() { return commandPool; }
   VkDevice device() { return device_; }

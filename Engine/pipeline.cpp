@@ -72,13 +72,23 @@ namespace engine {
         vertexInputInfo.pVertexAttributeDescriptions = nullptr;
         vertexInputInfo.pVertexBindingDescriptions = nullptr;
 
+        // {} ensures the pNext is nullptr and flags = 0
+        // This avoids the copy elision issue on adding that to the configInfo
+        VkPipelineViewportStateCreateInfo viewportInfo{};
+        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportInfo.viewportCount = 1;
+        viewportInfo.pViewports = &config.viewport;
+        viewportInfo.scissorCount = 1;
+        viewportInfo.pScissors = &config.scissor;
+
         VkGraphicsPipelineCreateInfo pipelineInfo{};
-        pipelineInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         pipelineInfo.stageCount = 2;
         pipelineInfo.pStages = shaderStages;
+
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &config.inputAssemblyInfo;
-        pipelineInfo.pViewportState = &config.viewportInfo;
+        pipelineInfo.pViewportState = &viewportInfo;
         pipelineInfo.pColorBlendState = &config.colorBlendInfo;
         pipelineInfo.pDepthStencilState = &config.depthStencilInfo;
         pipelineInfo.pRasterizationState = &config.rasterizationInfo;
@@ -96,7 +106,7 @@ namespace engine {
             throw std::runtime_error("Failed to create graphics pipeline");
     }
 
-    Pipeline::Pipeline(const std::string& vertFilePath, const std::string& fragFilePath, ProtocolDevice& device, const PipelineConfiguration& config) : device{device}{
+    Pipeline::Pipeline(const std::string& vertFilePath, const std::string& fragFilePath, Device& device, const PipelineConfiguration& config) : device{device}{
         createGraphicsPipeline(vertFilePath, fragFilePath, config);
     }
 
@@ -129,12 +139,6 @@ namespace engine {
 
         configInfo.scissor.offset = { 0, 0 };
         configInfo.scissor.extent = { width, height };
-
-        configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        configInfo.viewportInfo.viewportCount = 1;
-        configInfo.viewportInfo.pViewports = &configInfo.viewport;
-        configInfo.viewportInfo.scissorCount = 1;
-        configInfo.viewportInfo.pScissors = &configInfo.scissor;
 
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;

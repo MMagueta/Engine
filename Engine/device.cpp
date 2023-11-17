@@ -43,7 +43,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
 }
 
 // class member functions
-ProtocolDevice::ProtocolDevice(Window &window) : window{window} {
+Device::Device(Window &window) : window{window} {
   createInstance();
   setupDebugMessenger();
   createSurface();
@@ -52,7 +52,7 @@ ProtocolDevice::ProtocolDevice(Window &window) : window{window} {
   createCommandPool();
 }
 
-ProtocolDevice::~ProtocolDevice() {
+Device::~Device() {
   vkDestroyCommandPool(device_, commandPool, nullptr);
   vkDestroyDevice(device_, nullptr);
 
@@ -64,7 +64,7 @@ ProtocolDevice::~ProtocolDevice() {
   vkDestroyInstance(instance, nullptr);
 }
 
-void ProtocolDevice::createInstance() {
+void Device::createInstance() {
   if (enableValidationLayers && !checkValidationLayerSupport()) {
     throw std::runtime_error("validation layers requested, but not available!");
   }
@@ -105,7 +105,7 @@ void ProtocolDevice::createInstance() {
   hasGflwRequiredInstanceExtensions();
 }
 
-void ProtocolDevice::pickPhysicalDevice() {
+void Device::pickPhysicalDevice() {
   uint32_t deviceCount = 0;
   vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
   if (deviceCount == 0) {
@@ -130,7 +130,7 @@ void ProtocolDevice::pickPhysicalDevice() {
   std::cout << "physical device: " << properties.deviceName << std::endl;
 }
 
-void ProtocolDevice::createLogicalDevice() {
+void Device::createLogicalDevice() {
   QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
   std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -181,7 +181,7 @@ void ProtocolDevice::createLogicalDevice() {
   vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
 }
 
-void ProtocolDevice::createCommandPool() {
+void Device::createCommandPool() {
   QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
 
   VkCommandPoolCreateInfo poolInfo = {};
@@ -196,11 +196,11 @@ void ProtocolDevice::createCommandPool() {
   }
 }
 
-void ProtocolDevice::createSurface() {
+void Device::createSurface() {
   window.createWindowSurface(instance, &surface_);
 }
 
-bool ProtocolDevice::isDeviceSuitable(VkPhysicalDevice device) {
+bool Device::isDeviceSuitable(VkPhysicalDevice device) {
   QueueFamilyIndices indices = findQueueFamilies(device);
 
   bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -219,7 +219,7 @@ bool ProtocolDevice::isDeviceSuitable(VkPhysicalDevice device) {
          supportedFeatures.samplerAnisotropy;
 }
 
-void ProtocolDevice::populateDebugMessengerCreateInfo(
+void Device::populateDebugMessengerCreateInfo(
     VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
   createInfo = {};
   createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -232,7 +232,7 @@ void ProtocolDevice::populateDebugMessengerCreateInfo(
   createInfo.pUserData = nullptr; // Optional
 }
 
-void ProtocolDevice::setupDebugMessenger() {
+void Device::setupDebugMessenger() {
   if (!enableValidationLayers)
     return;
   VkDebugUtilsMessengerCreateInfoEXT createInfo;
@@ -243,7 +243,7 @@ void ProtocolDevice::setupDebugMessenger() {
   }
 }
 
-bool ProtocolDevice::checkValidationLayerSupport() {
+bool Device::checkValidationLayerSupport() {
   uint32_t layerCount;
   vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -268,7 +268,7 @@ bool ProtocolDevice::checkValidationLayerSupport() {
   return true;
 }
 
-std::vector<const char *> ProtocolDevice::getRequiredExtensions() {
+std::vector<const char *> Device::getRequiredExtensions() {
   uint32_t glfwExtensionCount = 0;
   const char **glfwExtensions;
   glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -283,7 +283,7 @@ std::vector<const char *> ProtocolDevice::getRequiredExtensions() {
   return extensions;
 }
 
-void ProtocolDevice::hasGflwRequiredInstanceExtensions() {
+void Device::hasGflwRequiredInstanceExtensions() {
   uint32_t extensionCount = 0;
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
   std::vector<VkExtensionProperties> extensions(extensionCount);
@@ -307,7 +307,7 @@ void ProtocolDevice::hasGflwRequiredInstanceExtensions() {
   }
 }
 
-bool ProtocolDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
   uint32_t extensionCount;
   vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,
                                        nullptr);
@@ -326,7 +326,7 @@ bool ProtocolDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
   return requiredExtensions.empty();
 }
 
-QueueFamilyIndices ProtocolDevice::findQueueFamilies(VkPhysicalDevice device) {
+QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
   QueueFamilyIndices indices;
 
   uint32_t queueFamilyCount = 0;
@@ -360,7 +360,7 @@ QueueFamilyIndices ProtocolDevice::findQueueFamilies(VkPhysicalDevice device) {
 }
 
 SwapChainSupportDetails
-ProtocolDevice::querySwapChainSupport(VkPhysicalDevice device) {
+Device::querySwapChainSupport(VkPhysicalDevice device) {
   SwapChainSupportDetails details;
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_,
                                             &details.capabilities);
@@ -387,7 +387,7 @@ ProtocolDevice::querySwapChainSupport(VkPhysicalDevice device) {
 }
 
 VkFormat
-ProtocolDevice::findSupportedFormat(const std::vector<VkFormat> &candidates,
+Device::findSupportedFormat(const std::vector<VkFormat> &candidates,
                                     VkImageTiling tiling,
                                     VkFormatFeatureFlags features) {
   for (VkFormat format : candidates) {
@@ -405,7 +405,7 @@ ProtocolDevice::findSupportedFormat(const std::vector<VkFormat> &candidates,
   throw std::runtime_error("failed to find supported format!");
 }
 
-uint32_t ProtocolDevice::findMemoryType(uint32_t typeFilter,
+uint32_t Device::findMemoryType(uint32_t typeFilter,
                                         VkMemoryPropertyFlags properties) {
   VkPhysicalDeviceMemoryProperties memProperties;
   vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
@@ -419,7 +419,7 @@ uint32_t ProtocolDevice::findMemoryType(uint32_t typeFilter,
   throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void ProtocolDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
                                   VkMemoryPropertyFlags properties,
                                   VkBuffer &buffer,
                                   VkDeviceMemory &bufferMemory) {
@@ -450,7 +450,7 @@ void ProtocolDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
   vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
 
-VkCommandBuffer ProtocolDevice::beginSingleTimeCommands() {
+VkCommandBuffer Device::beginSingleTimeCommands() {
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -468,7 +468,7 @@ VkCommandBuffer ProtocolDevice::beginSingleTimeCommands() {
   return commandBuffer;
 }
 
-void ProtocolDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+void Device::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
   vkEndCommandBuffer(commandBuffer);
 
   VkSubmitInfo submitInfo{};
@@ -482,7 +482,7 @@ void ProtocolDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
   vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
 }
 
-void ProtocolDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
+void Device::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
                                 VkDeviceSize size) {
   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -495,7 +495,7 @@ void ProtocolDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
   endSingleTimeCommands(commandBuffer);
 }
 
-void ProtocolDevice::copyBufferToImage(VkBuffer buffer, VkImage image,
+void Device::copyBufferToImage(VkBuffer buffer, VkImage image,
                                        uint32_t width, uint32_t height,
                                        uint32_t layerCount) {
   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
@@ -518,7 +518,7 @@ void ProtocolDevice::copyBufferToImage(VkBuffer buffer, VkImage image,
   endSingleTimeCommands(commandBuffer);
 }
 
-void ProtocolDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo,
+void Device::createImageWithInfo(const VkImageCreateInfo &imageInfo,
                                          VkMemoryPropertyFlags properties,
                                          VkImage &image,
                                          VkDeviceMemory &imageMemory) {
