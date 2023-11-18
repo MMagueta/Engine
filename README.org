@@ -1,0 +1,9 @@
+#+TITLE: A toy Vulkan engine
+
+* About
+
+I am just playing around with Vulkan
+
+* How to run
+
+I am using Visual Studio to run, but so long you have the vulkan headers (in Nix, the vulkan-headers package is the one), either gcc or clang should do.
