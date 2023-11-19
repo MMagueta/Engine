@@ -33,6 +33,8 @@ namespace engine {
 
         static PipelineConfiguration defaultPipelineConfiguration(uint32_t width, uint32_t height);
 
+        void bind(VkCommandBuffer);
+
         private:
         static std::vector<char> readFile(const std::string& filePath);
 

@@ -35,6 +35,10 @@ namespace engine {
         vkDestroyPipeline(device.device(), graphicsPipeline, nullptr);
     }
 
+    void Pipeline::bind(VkCommandBuffer command) {
+        vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+    }
+
     void Pipeline::createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath, const PipelineConfiguration& config){
         
         assert(config.pipelineLayout != VK_NULL_HANDLE && "Cannot create graphics pipeline since no pipeline layout was provided.");
