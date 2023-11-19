@@ -1,4 +1,5 @@
 #include "pipeline.hpp"
+#include "model.hpp"
 #include "vulkan/vulkan_core.h"
 #include <fstream>
 #include <stdexcept>
@@ -69,12 +70,15 @@ namespace engine {
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
+        std::vector<VkVertexInputBindingDescription> bindingDescriptions = Model::Vertex::getBindingDescriptions();
+        std::vector<VkVertexInputAttributeDescription> attributeDescritions = Model::Vertex::getAttributeDescriptions();
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
-        vertexInputInfo.vertexBindingDescriptionCount= 0;
-        vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-        vertexInputInfo.pVertexBindingDescriptions = nullptr;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescritions.size());
+        vertexInputInfo.vertexBindingDescriptionCount= static_cast<uint32_t>(bindingDescriptions.size());
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDescritions.data();
+        vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
         // {} ensures the pNext is nullptr and flags = 0
         // This avoids the copy elision issue on adding that to the configInfo

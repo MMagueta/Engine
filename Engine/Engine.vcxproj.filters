@@ -33,6 +33,12 @@
     <ClCompile Include="swap_chain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="device.hpp">
@@ -47,13 +53,19 @@
     <ClInclude Include="swap_chain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="model.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runner.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\simple_shader.frag">
+    <CustomBuild Include="Shaders\simple_shader.frag">
       <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\simple_shader.vert">
+    </CustomBuild>
+    <CustomBuild Include="Shaders\simple_shader.vert">
       <Filter>Resource Files\Shaders</Filter>
-    </None>
+    </CustomBuild>
   </ItemGroup>
 </Project>
