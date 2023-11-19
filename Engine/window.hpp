@@ -22,11 +22,20 @@ namespace engine {
 
         void createWindowSurface(VkInstance, VkSurfaceKHR*);
 
+        bool wasWindowResized() {
+            return frameBufferResized;
+        }
+
+        void resetWindowResizedFlag() { frameBufferResized = false; }
+
         private:
         
+        static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
+        
         void initWindow();
-        const int width;
-        const int height;
+        int width;
+        int height;
+        bool frameBufferResized = false;
 
         std::string windowName;
 

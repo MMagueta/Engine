@@ -21,6 +21,18 @@ namespace engine {
         createSyncObjects();
     }
 
+    SwapChain::SwapChain(
+        Device& deviceRef, VkExtent2D extent, std::shared_ptr<SwapChain> previous)
+        : device{ deviceRef }, windowExtent{ extent }, oldSwapChain{ previous } {
+        createSwapChain();
+        createImageViews();
+        createRenderPass();
+        createDepthResources();
+        createFramebuffers();
+        createSyncObjects();
+        oldSwapChain = nullptr;
+    }
+
     SwapChain::~SwapChain() {
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device.device(), imageView, nullptr);
@@ -142,6 +154,7 @@ namespace engine {
         createInfo.imageExtent = extent;
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        createInfo.oldSwapchain = oldSwapChain ? oldSwapChain->swapChain : nullptr;
 
         QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
         uint32_t queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
@@ -169,12 +182,10 @@ namespace engine {
             throw std::runtime_error("failed to create swap chain!");
         }
 
-        // we only specified a minimum number of images in the swap chain, so the implementation is
-        // allowed to create a swap chain with more. That's why we'll first query the final number of
-        // images with vkGetSwapchainImagesKHR, then resize the container and finally call it again to
-        // retrieve the handles.
         vkGetSwapchainImagesKHR(device.device(), swapChain, &imageCount, nullptr);
+
         swapChainImages.resize(imageCount);
+
         vkGetSwapchainImagesKHR(device.device(), swapChain, &imageCount, swapChainImages.data());
 
         swapChainImageFormat = surfaceFormat.format;
