@@ -26,9 +26,9 @@ namespace engine {
 
         void Runner::loadModels() {
             std::vector<engine::Model::Vertex> vertices{
-                { {0.0f, -0.5f}},
-                  {{0.5f, 0.5f}},
-                  {{-0.5f, 0.5f}} };
+                { { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
+                { { 0.5f, 0.5f  }, { 0.0f, 1.0f, 0.0f } },
+                { { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } } };
             model = std::make_unique<engine::Model>(device, vertices);
             return;
         }
